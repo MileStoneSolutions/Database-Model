@@ -1,0 +1,374 @@
+﻿/*
+Created: 5/11/2018
+Modified: 6/8/2018
+Model: MySQL 5.1
+Database: MySQL 5.1
+*/
+
+
+-- Create tables section -------------------------------------------------
+
+-- Table Category
+
+CREATE TABLE `Category`
+(
+  `categoryId` Int NOT NULL AUTO_INCREMENT,
+  `categoryName` Varchar(30) NOT NULL,
+  `lastUpdate` Datetime NOT NULL,
+  `flag` Int NOT NULL,
+  `description` Char(150),
+  PRIMARY KEY (`categoryId`)
+)
+;
+
+ALTER TABLE `Category` ADD UNIQUE `Attribute2` (`categoryName`)
+;
+
+-- Table Sub-Category
+
+CREATE TABLE `Sub-Category`
+(
+  `subCategoryId` Int NOT NULL AUTO_INCREMENT,
+  `subCategoryName` Varchar(50) NOT NULL,
+  `lastUpdate` Datetime NOT NULL,
+  `flag` Int NOT NULL,
+  `categoryId` Int NOT NULL,
+  `description` Char(150),
+  PRIMARY KEY (`subCategoryId`,`categoryId`)
+)
+;
+
+ALTER TABLE `Sub-Category` ADD UNIQUE `CategoryId` (`categoryId`)
+;
+
+ALTER TABLE `Sub-Category` ADD UNIQUE `Attribute2` (`subCategoryName`)
+;
+
+-- Table OnlineShop
+
+CREATE TABLE `OnlineShop`
+(
+  `name` Varchar(30) NOT NULL,
+  `phoneNo` Int,
+  `emialId` Varchar(50),
+  `address` Varchar(100),
+  `GSTIN` Char(20) NOT NULL,
+  `Postal Code` Char(20)
+)
+;
+
+-- Table Brand
+
+CREATE TABLE `Brand`
+(
+  `brandId` Int NOT NULL,
+  `brandName` Varchar(50) NOT NULL,
+  `lastUpdate` Datetime NOT NULL,
+  `flag` Int(1) NOT NULL,
+  `Description` Char(150)
+)
+;
+
+ALTER TABLE `Brand` ADD PRIMARY KEY (`brandId`)
+;
+
+ALTER TABLE `Brand` ADD UNIQUE `brandName` (`brandName`)
+;
+
+-- Table SubCategory-Brand_Junction
+
+CREATE TABLE `SubCategory-Brand_Junction`
+(
+  `subCategoryId` Int NOT NULL,
+  `categoryId` Int NOT NULL,
+  `brandId` Int NOT NULL
+)
+;
+
+ALTER TABLE `SubCategory-Brand_Junction` ADD PRIMARY KEY (`subCategoryId`,`categoryId`,`brandId`)
+;
+
+-- Table Category-Brand_Junction
+
+CREATE TABLE `Category-Brand_Junction`
+(
+  `categoryId` Int NOT NULL,
+  `brandId` Int NOT NULL
+)
+;
+
+ALTER TABLE `Category-Brand_Junction` ADD PRIMARY KEY (`categoryId`,`brandId`)
+;
+
+-- Table Product
+
+CREATE TABLE `Product`
+(
+  `productId` Int NOT NULL,
+  `productName` Varchar(20) NOT NULL,
+  `lastUpdated` Datetime NOT NULL,
+  `flag` Int(1) NOT NULL,
+  `brandId` Int NOT NULL,
+  `categoryId` Int NOT NULL,
+  `productDesc` Varchar(300)
+)
+;
+
+ALTER TABLE `Product` ADD PRIMARY KEY (`productId`,`brandId`,`categoryId`)
+;
+
+-- Table Product-Details
+
+CREATE TABLE `Product-Details`
+(
+  `price` Int NOT NULL,
+  `quantity` Int NOT NULL,
+  `productId` Int NOT NULL,
+  `brandId` Int NOT NULL,
+  `categoryId` Int NOT NULL,
+  `cgst` Int NOT NULL,
+  `sgst` Int NOT NULL,
+  `discount` Int NOT NULL
+)
+;
+
+ALTER TABLE `Product-Details` ADD PRIMARY KEY (`productId`,`brandId`,`categoryId`)
+;
+
+-- Table Customer
+
+CREATE TABLE `Customer`
+(
+  `customerId` Int NOT NULL,
+  `userName` Varchar(50) NOT NULL,
+  `emailId` Varchar(20) NOT NULL,
+  `password` Varchar(20) NOT NULL,
+  `contactNo` Varchar(12) NOT NULL,
+  `flag` Int NOT NULL
+)
+;
+
+ALTER TABLE `Customer` ADD PRIMARY KEY (`customerId`)
+;
+
+-- Table DeliveryAddress
+
+CREATE TABLE `DeliveryAddress`
+(
+  `customerId` Int NOT NULL,
+  `area/locality` Varchar(100) NOT NULL,
+  `city/district` Varchar(100) NOT NULL,
+  `state` Varchar(40) NOT NULL,
+  `pincode` Varchar(10) NOT NULL,
+  `address type` Varchar(10) NOT NULL,
+  `landmark` Varchar(20),
+  `optional contactNo.` Varchar(12),
+  `flag` Int NOT NULL,
+  `addressId` Int NOT NULL AUTO_INCREMENT,
+  `deliveryId` Int NOT NULL,
+  UNIQUE `Key9` (`addressId`)
+)
+;
+
+ALTER TABLE `DeliveryAddress` ADD PRIMARY KEY (`customerId`,`addressId`,`deliveryId`)
+;
+
+-- Table OrderTable
+
+CREATE TABLE `OrderTable`
+(
+  `orderId` Int NOT NULL AUTO_INCREMENT,
+  `dateOfOrder` Datetime NOT NULL,
+  `dateOfShipment` Datetime NOT NULL,
+  `amountPayable` Int NOT NULL DEFAULT 0,
+  `deliveryAmoiunt` Int NOT NULL DEFAULT 0,
+  `netDiscount` Int NOT NULL DEFAULT 0,
+  `cgst` Int NOT NULL DEFAULT 0,
+  `sgst` Int NOT NULL DEFAULT 0,
+  `receivedBy` Varchar(50) NOT NULL,
+  `phoneNo` Varchar(12) NOT NULL,
+  `customerId` Int NOT NULL,
+  `addressId` Int NOT NULL,
+  `statusId` Int NOT NULL,
+  `deliveryId` Int NOT NULL,
+  PRIMARY KEY (`orderId`,`customerId`,`addressId`,`statusId`,`deliveryId`)
+)
+;
+
+-- Table Order Product Detail
+
+CREATE TABLE `Order Product Detail`
+(
+  `quantity` Int NOT NULL,
+  `productId` Int NOT NULL,
+  `brandId` Int NOT NULL,
+  `categoryId` Int NOT NULL,
+  `orderId` Int NOT NULL,
+  `customerId` Int NOT NULL,
+  `addressId` Int NOT NULL,
+  `price` Int NOT NULL,
+  `statusId` Int NOT NULL,
+  `deliveryId` Int NOT NULL
+)
+;
+
+ALTER TABLE `Order Product Detail` ADD PRIMARY KEY (`productId`,`brandId`,`categoryId`,`orderId`,`customerId`,`addressId`,`statusId`,`deliveryId`)
+;
+
+-- Table Status Table
+
+CREATE TABLE `Status Table`
+(
+  `statusId` Int NOT NULL,
+  `status` Varchar(20) NOT NULL
+)
+;
+
+ALTER TABLE `Status Table` ADD PRIMARY KEY (`statusId`)
+;
+
+-- Table Cart Table
+
+CREATE TABLE `Cart Table`
+(
+  `quantity` Int NOT NULL,
+  `price` Int NOT NULL,
+  `estimatedDeliveryDate` Date NOT NULL,
+  `discount` Int NOT NULL,
+  `cgst` Int NOT NULL,
+  `sgst` Int NOT NULL,
+  `cartId` Int NOT NULL,
+  `productId` Int NOT NULL,
+  `brandId` Int NOT NULL,
+  `categoryId` Int NOT NULL
+)
+;
+
+ALTER TABLE `Cart Table` ADD PRIMARY KEY (`cartId`,`productId`,`brandId`,`categoryId`)
+;
+
+-- Table Sales Order
+
+CREATE TABLE `Sales Order`
+(
+  `salesOrderId` Int NOT NULL,
+  `amountPayable` Int NOT NULL,
+  `netDiscount` Int NOT NULL,
+  `dateOfOrder` Datetime NOT NULL,
+  `cgst` Int NOT NULL,
+  `sgst` Int NOT NULL,
+  `orderId` Int NOT NULL,
+  `customerId` Int NOT NULL,
+  `addressId` Int NOT NULL,
+  `statusId` Int NOT NULL,
+  `deliveryId` Int NOT NULL
+)
+;
+
+ALTER TABLE `Sales Order` ADD PRIMARY KEY (`salesOrderId`,`orderId`,`customerId`,`addressId`,`statusId`,`deliveryId`)
+;
+
+-- Table Payment
+
+CREATE TABLE `Payment`
+(
+  `paymentId` Int NOT NULL,
+  `paymentMode` Char(20) NOT NULL,
+  `amountPayable` Int NOT NULL
+)
+;
+
+ALTER TABLE `Payment` ADD PRIMARY KEY (`paymentId`)
+;
+
+-- Table Payment-Order Detail
+
+CREATE TABLE `Payment-Order Detail`
+(
+  `orderId` Int NOT NULL,
+  `customerId` Int NOT NULL,
+  `addressId` Int NOT NULL,
+  `statusId` Int NOT NULL,
+  `deliveryId` Int NOT NULL,
+  `paymentId` Int NOT NULL
+)
+;
+
+ALTER TABLE `Payment-Order Detail` ADD PRIMARY KEY (`orderId`,`customerId`,`addressId`,`statusId`,`deliveryId`,`paymentId`)
+;
+
+-- Create foreign keys (relationships) section ------------------------------------------------- 
+
+
+ALTER TABLE `Sub-Category` ADD CONSTRAINT `has` FOREIGN KEY (`categoryId`) REFERENCES `Category` (`categoryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `SubCategory-Brand_Junction` ADD CONSTRAINT `Relationship7` FOREIGN KEY (`subCategoryId`, `categoryId`) REFERENCES `Sub-Category` (`subCategoryId`, `categoryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `SubCategory-Brand_Junction` ADD CONSTRAINT `Relationship8` FOREIGN KEY (`brandId`) REFERENCES `Brand` (`brandId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Category-Brand_Junction` ADD CONSTRAINT `Relationship11` FOREIGN KEY (`categoryId`) REFERENCES `Category` (`categoryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Category-Brand_Junction` ADD CONSTRAINT `Relationship12` FOREIGN KEY (`brandId`) REFERENCES `Brand` (`brandId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Product` ADD CONSTRAINT `Relationship13` FOREIGN KEY (`brandId`) REFERENCES `Brand` (`brandId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Product` ADD CONSTRAINT `Relationship15` FOREIGN KEY (`categoryId`) REFERENCES `Category` (`categoryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Product` ADD CONSTRAINT `Relationship16` FOREIGN KEY (`categoryId`) REFERENCES `Sub-Category` (`categoryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Product-Details` ADD CONSTRAINT `has` FOREIGN KEY (`productId`, `brandId`, `categoryId`) REFERENCES `Product` (`productId`, `brandId`, `categoryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `DeliveryAddress` ADD CONSTRAINT `has` FOREIGN KEY (`customerId`) REFERENCES `Customer` (`customerId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `OrderTable` ADD CONSTRAINT `Relationship23` FOREIGN KEY (`customerId`, `addressId`, `deliveryId`) REFERENCES `DeliveryAddress` (`customerId`, `addressId`, `deliveryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Order Product Detail` ADD CONSTRAINT `Relationship25` FOREIGN KEY (`productId`, `brandId`, `categoryId`) REFERENCES `Product` (`productId`, `brandId`, `categoryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Order Product Detail` ADD CONSTRAINT `Relationship26` FOREIGN KEY (`orderId`, `customerId`, `addressId`, `statusId`, `deliveryId`) REFERENCES `OrderTable` (`orderId`, `customerId`, `addressId`, `statusId`, `deliveryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `OrderTable` ADD CONSTRAINT `Relationship29` FOREIGN KEY (`statusId`) REFERENCES `Status Table` (`statusId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Cart Table` ADD CONSTRAINT `Relationship32` FOREIGN KEY (`productId`, `brandId`, `categoryId`) REFERENCES `Product` (`productId`, `brandId`, `categoryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Sales Order` ADD CONSTRAINT `Relationship37` FOREIGN KEY (`orderId`, `customerId`, `addressId`, `statusId`, `deliveryId`) REFERENCES `OrderTable` (`orderId`, `customerId`, `addressId`, `statusId`, `deliveryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Payment-Order Detail` ADD CONSTRAINT `Relationship38` FOREIGN KEY (`orderId`, `customerId`, `addressId`, `statusId`, `deliveryId`) REFERENCES `OrderTable` (`orderId`, `customerId`, `addressId`, `statusId`, `deliveryId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
+ALTER TABLE `Payment-Order Detail` ADD CONSTRAINT `Relationship39` FOREIGN KEY (`paymentId`) REFERENCES `Payment` (`paymentId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+;
+
+
